@@ -10,17 +10,15 @@ export async function test(formData) {
     };
 
     // Validate form data using Zod
+
     const parsedData = registerSchema.safeParse(rawFormData);
-
-    if (!parsedData.success) {
-        // If validation fails, return an error
-
-        return { status: 400, errors: parsedData.error.errors };
+    if (parsedData.error.errors) {
+        console.log("errors", parsedData.error.errors);
     }
 
-    const validatedData = parsedData.data;
+    // const validatedData = parsedData.data;
 
-    console.log("Validated Data:", validatedData);
+    // console.log("Validated Data:", validatedData);
 }
 // Функція для створення користувача
 export async function createUser(formData) {
