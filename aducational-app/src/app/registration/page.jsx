@@ -11,19 +11,23 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { test } from "../lib/actions";
+import { createUser } from "../lib/actions";
 import { registerSchema } from "../lib/schema";
+import { red } from "@mui/material/colors";
 
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({
         password: "",
         username: "",
+        email: "",
     });
     const [data, setData] = useState({
         password: "",
         username: "",
+        email: "",
     });
+    const [mainError, setMainError] = useState(null);
 
     const handleData = event => {
         const { name, value } = event.target;
@@ -31,15 +35,15 @@ export default function RegisterPage() {
             ...prevData,
             [name]: value,
         }));
+
         const parsedData = registerSchema.safeParse({ ...data, [name]: value });
+
         if (!parsedData.success) {
             const fieldErrors = parsedData.error.errors.reduce((acc, error) => {
                 acc[error.path[0]] = error.message;
                 return acc;
             }, {});
             setErrors(fieldErrors);
-
-            console.log(fieldErrors);
         } else {
             // Clear errors for the field being updated
             setErrors(prevErrors => ({
@@ -48,7 +52,20 @@ export default function RegisterPage() {
             }));
         }
     };
+    const handleRegister = async formData => {
+        const result = await createUser(formData);
 
+        // Check if the result contains an error
+        if (result.error) {
+            // If there's an error, set it to the main error state
+            setMainError(result.error);
+        } else {
+            // Clear any existing main error
+            setMainError(null);
+            // Handle successful registration here, e.g., redirect the user or show a success message
+            console.log("User registered successfully:", result);
+        }
+    };
     const handleClickShowPassword = () => setShowPassword(show => !show);
 
     return (
@@ -57,12 +74,22 @@ export default function RegisterPage() {
                 variant="h4"
                 component="h1"
             >
-                Register
+                Registration
             </Typography>
             <form
                 // onSubmit={handleRegister}
-                action={test}
+                action={handleRegister}
             >
+                {mainError && (
+                    <Typography
+                        variant="overline"
+                        display="block"
+                        gutterBottom
+                        color={red[500]}
+                    >
+                        {mainError}
+                    </Typography>
+                )}
                 <TextField
                     label="Username"
                     id="username"
@@ -72,6 +99,18 @@ export default function RegisterPage() {
                     error={errors.username}
                     helperText={errors.username}
                     fullWidth
+                    autoComplete="name"
+                />
+                <TextField
+                    label="Email"
+                    id="email"
+                    margin="normal"
+                    name="email"
+                    onChange={handleData}
+                    error={errors.email}
+                    helperText={errors.email}
+                    fullWidth
+                    type="email"
                 />
                 <TextField
                     id="password"
@@ -83,6 +122,7 @@ export default function RegisterPage() {
                     error={errors.password}
                     onChange={handleData}
                     fullWidth
+                    autoComplete="current-password"
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -110,6 +150,8 @@ export default function RegisterPage() {
                         disabled={
                             errors.password ||
                             errors.username ||
+                            errors.email ||
+                            !data.email ||
                             !data.password ||
                             !data.username
                         }

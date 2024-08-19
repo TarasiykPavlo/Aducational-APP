@@ -1,53 +1,33 @@
 "use server";
-import { registerSchema } from "./schema";
+
 import { redirect } from "next/navigation";
 import { supabase } from "./supabase";
 
-export async function test(formData) {
-    const rawFormData = {
-        username: formData.get("username"),
-        password: formData.get("password"),
-    };
-
-    // Validate form data using Zod
-
-    const parsedData = registerSchema.safeParse(rawFormData);
-    if (parsedData.error.errors) {
-        console.log("errors", parsedData.error.errors);
-    }
-
-    // const validatedData = parsedData.data;
-
-    // console.log("Validated Data:", validatedData);
-}
 // Функція для створення користувача
 export async function createUser(formData) {
     const rawFormData = {
-        firstName: formData.get("firstName"),
-        lastName: formData.get("lastName"),
-        phone: formData.get("phone"),
-        birthdate: formData.get("birthdate"),
-        email: formData.get("email"),
+        username: formData.get("username"),
         password: formData.get("password"),
+        email: formData.get("email"),
     };
-
     // Створити користувача в Supabase
     const { data, error } = await supabase.auth.signUp({
         email: rawFormData.email,
         password: rawFormData.password,
         options: {
             data: {
-                first_name: rawFormData.firstName,
-                last_name: rawFormData.lastName,
-                phone: rawFormData.phone,
-                birthdate: rawFormData.birthdate,
+                username: rawFormData.username,
+
                 role: "user",
             },
         },
     });
     if (error) {
-        return { error: error.message }; // Викидаємо помилку, якщо відбулася помилка під час реєстрації
+        console.log(error.code);
+        return { error: error.code }; // Викидаємо помилку, якщо відбулася помилка під час реєстрації
     }
+    console.log(data);
+    return data;
 }
 
 export async function signIn(formData) {
