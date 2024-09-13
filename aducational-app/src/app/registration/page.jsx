@@ -164,6 +164,12 @@ export default function RegisterPage() {
                     >
                         I have account
                     </Button>
+                    <Button
+                        variant="text"
+                        href="/"
+                    >
+                        home
+                    </Button>
                 </div>
             </form>
         </div>

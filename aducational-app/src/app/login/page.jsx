@@ -64,6 +64,12 @@ export default function LoginPage() {
                     >
                         Don`t have account?
                     </Button>
+                    <Button
+                        variant="text"
+                        href="/"
+                    >
+                        home
+                    </Button>
                 </div>
             </form>
         </div>

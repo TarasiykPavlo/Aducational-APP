@@ -15,7 +15,8 @@ export default function RootLayout({ children }) {
             <AppRouterCacheProvider options={{ key: "css" }}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <body className="flex justify-between xl:justify-center flex-col items-center min-h-screen">
+
+                    <body className="flex  flex-col items-center min-h-screen">
                         {children}
                     </body>
                 </ThemeProvider>
